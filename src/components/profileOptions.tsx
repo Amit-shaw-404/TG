@@ -16,7 +16,7 @@ const ProfileOptions: React.FunctionComponent<ProfileOptionsProps> = () => {
         if(!val)return;
         localStorage.removeItem('tokentravellerGuide')
         dispatch({type:SAVE_USER_DETAILS, payload:{username:null}})
-        window.location.replace("http://localhost:3000/");
+        window.location.replace("https://tguide.netlify.app/");
     }
 
     let handleProfileClick=()=>{

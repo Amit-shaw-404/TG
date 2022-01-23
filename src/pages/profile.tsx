@@ -194,7 +194,7 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
             setUser(temp);
             localStorage.removeItem('tokentravellerGuide')
             dispatch({type:SAVE_USER_DETAILS, payload:{username:null}})
-            window.location.replace("http://localhost:3000/");
+            window.location.replace("https://tguide.netlify.app/");
         })
         .catch(err=>{
             console.log(err);
@@ -284,7 +284,7 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
                                 <EditBlog handleUpdate={handleBlogUpdate} prevContent={blogOnEdit.content} cancelUpdate={cancelBlogUpdate}/>
                             }
                             {posts && posts.sort((a:any, b:any)=>{
-                                if(a.date>b.date)return 1;
+                                if(a.date<b.date)return 1;
                                 return -1;
                             }).map((blog:any, index:number)=>(
                                 <BlogCard key={index} blog={blog} isUser={realUser} handleEdit={handleBlogEdit} handleDelete={handleBlogDelete}/>

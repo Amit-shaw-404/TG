@@ -23,7 +23,7 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
     let userId=useSelector((state:any)=>state.currentDetails.id);
     let checkRedirect=()=>{
         if(username===null || username===undefined || userId===null || userId===undefined){
-            window.location.replace("http://localhost:3000/");
+            window.location.replace("https://tguide.netlify.app/");
         }
     }
     checkRedirect();
@@ -98,7 +98,7 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
                         }
                         {
                             blogs && !sortLiked && sortRecent && blogs.sort((a:any, b:any)=>{
-                                if(a.date>b.date)return 1;
+                                if(a.date<b.date)return 1;
                                 return -1;
                             }).map((blog:any, index)=>(
                                 <BlogCard key={index} blog={blog} isUser={false} handleDelete={null} handleEdit={null}/>

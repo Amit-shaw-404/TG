@@ -23,7 +23,7 @@ const DetailsDialog: React.FunctionComponent<DetailsDialogProps> = () => {
     let id=useSelector((state:any)=>state.currentDetails.id)
     let checkRedirect=()=>{
         if(username===null || username===undefined){
-            window.location.replace("http://localhost:3000/");
+            window.location.replace("https://tguide.netlify.app/");
         }
     }
     checkRedirect();

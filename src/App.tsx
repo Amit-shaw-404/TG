@@ -32,6 +32,9 @@ function App() {
       // console.log(res);
       dispatch({type:SAVE_USER_DETAILS, payload:{username:res.data.username, id:res.data.id}});
     })
+    .catch(res=>{
+      localStorage.removeItem("tokentravellerGuide");
+    })
   }, [])
   return (
     <BrowserRouter>
