@@ -1,0 +1,5 @@
+export const SAVE_CURRENT_DATA="SAVE_CURRENT_DATA";
+export const SAVE_USER_DETAILS="SAVE_USER_DETAILS";
+export const TOGGLE_SIGN_IN="TOGGLE_SIGN_IN";
+export const SAVE_REFS="SAVE_REFS";
+export const CLEAR_REFS="CLEAR REFS";
