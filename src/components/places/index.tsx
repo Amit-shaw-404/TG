@@ -19,6 +19,7 @@ const Places: React.FunctionComponent<PlacesProps> = ({bounds, places, setNewPla
     let [selected, setSelected]=useState("Attractions");
     let [rating, setRating]=useState(2)
     let [loading, setLoading]=useState(true);
+    let [hloader, setHloader]=useState(false);
     let dispatch=useDispatch();
     useEffect(()=>{
         dispatch({type:CLEAR_REFS});
@@ -26,6 +27,7 @@ const Places: React.FunctionComponent<PlacesProps> = ({bounds, places, setNewPla
         let id=setTimeout(()=>{
             getPlaces(urls[selected], bounds.sw, bounds.ne).then((data)=>{
                 setNewPlaces(data.data);
+                console.log(data.data);
                 setLoading(false);
             })
         }, 1000)
@@ -71,7 +73,7 @@ const Places: React.FunctionComponent<PlacesProps> = ({bounds, places, setNewPla
             }
             <div className="flex flex-col space-y-5 w-full items-center justify-center">
                 {!loading && places && places.filter((place:any)=>(parseFloat(place.rating)>rating)).map((place:any, index:number)=>
-                    <Cards data={place} key={index}/>
+                    <Cards data={place} key={index} setLoading={hloader}/>
                 )}
             </div>
         </div>

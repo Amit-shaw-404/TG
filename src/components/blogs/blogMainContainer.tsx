@@ -19,14 +19,17 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
     let [active, setActive]=useState(true);
     let [sortRecent, setSortRecent]=useState(false);
     let [sortLiked, setSortLikes]=useState(false);
+    let [loading, setLoading]=useState(true);
     let username=useSelector((state:any)=>state.currentDetails.username);
     let userId=useSelector((state:any)=>state.currentDetails.id);
     let checkRedirect=()=>{
-        if(username===null || username===undefined || userId===null || userId===undefined){
+        if(username===null || username===undefined || userId===null || userId===undefined || selected_id===null || selected_id===undefined){
             window.location.replace("https://tguide.netlify.app/");
         }
     }
-    checkRedirect();
+    // useEffect(()=>{
+    //     checkRedirect();
+    // }, [])
     let selected_id=useSelector((state:any)=>state.currentDetails?.selected?.location_id)
     useEffect(()=>{
         let token:any=localStorage.getItem(`tokentravellerGuide`);
@@ -37,7 +40,12 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
         })
         .then(res=>{
             // console.log(res);
-            setBlogs(res.data);
+            if((username===null || username===undefined || userId===null || userId===undefined || selected_id===null || selected_id===undefined)){
+                checkRedirect();
+            }else{
+                setLoading(false);
+                setBlogs(res.data);
+            }
         })
         .catch(err=>{
             console.log(err);
@@ -68,6 +76,14 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
     return (
         <div className="w-full bg-gray-100 min-h-screen">
             <Header setCoordinates={null}/>
+            {loading && 
+                    <div className="w-full flex justify-center items-center" style={{height:"80vh"}}>
+                        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-purple-500" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+            }
+            {!loading && 
             <div className="flex w-full">
                 <div className="w-7/12 max-h-screen overflow-y-scroll scroll overflow-x-hidden flex flex-col items-center">
                     <div className="space-y-5 my-5 w-8/12 h-full">
@@ -116,6 +132,7 @@ const BlogMain: React.FunctionComponent<BlogMainProps> = () => {
                     <MainCard/>
                 </div>
             </div>
+            }
         </div>
     );
 }

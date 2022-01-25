@@ -5,10 +5,11 @@ import { SAVE_CURRENT_DATA, SAVE_REFS, TOGGLE_SIGN_IN } from "../../store/types"
 
 interface CardsProps {
     data:any,
+    setLoading:any
     // setCard:any
 }
  
-const Cards: React.FunctionComponent<CardsProps> = ({data}) => {
+const Cards: React.FunctionComponent<CardsProps> = ({data, setLoading}) => {
     let [isFull, setIsFull]=useState(false);
     let ratingFull=Math.floor(parseFloat(data.rating));
     let half=ratingFull<parseFloat(data.rating);
@@ -28,8 +29,12 @@ const Cards: React.FunctionComponent<CardsProps> = ({data}) => {
     let handleBlogClick=()=>{
         //check loggedIn here
         if(username){
-            history.push(`/blogs/${data.location_id}`);
             dispatch({type:SAVE_CURRENT_DATA, payload:data});
+            setLoading(true);
+            setTimeout(()=>{
+                setLoading(false);
+                history.push(`/blogs/${data.location_id}`);
+            }, 1500)
         }
         else{
             dispatch({type:TOGGLE_SIGN_IN});

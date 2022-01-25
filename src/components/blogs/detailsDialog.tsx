@@ -15,18 +15,20 @@ interface DetailsDialogProps {
  
 const DetailsDialog: React.FunctionComponent<DetailsDialogProps> = () => {
     let [liked, setLiked]=useState(false);
+    let [realUser, setRealUser]=useState(false);
+    let [loading, setLoading]=useState(true);
     let history=useHistory();
     let pathname=history.location.pathname;
     let paths=pathname.split("/")
     let blogId=paths[paths.length-1];
     let username=useSelector((state:any)=>state.currentDetails.username)
     let id=useSelector((state:any)=>state.currentDetails.id)
-    let checkRedirect=()=>{
-        if(username===null || username===undefined){
-            window.location.replace("https://tguide.netlify.app/");
-        }
-    }
-    checkRedirect();
+    // let checkRedirect=()=>{
+    //     if(username===null || username===undefined){
+    //         window.location.replace("https://tguide.netlify.app/");
+    //     }
+    // }
+    // checkRedirect();
     let [blog, setBlog]=useState({
         title:"",
         content:"",
@@ -55,12 +57,7 @@ const DetailsDialog: React.FunctionComponent<DetailsDialogProps> = () => {
             }   
     }
     let handleFetchComments=()=>{
-        let token:any=localStorage.getItem(`tokentravellerGuide`);
-        axios.post(BASE_URL+"getComments", {blogId}, {
-            headers:{
-                "x-access-token":token
-            }
-        })
+        axios.post(BASE_URL+"getComments", {blogId})
         .then(res=>{
             // console.log(res);
             setComments(res.data);
@@ -70,9 +67,24 @@ const DetailsDialog: React.FunctionComponent<DetailsDialogProps> = () => {
         })
     }
     useEffect(()=>{
+        let token:any=localStorage.getItem(`tokentravellerGuide`);
+        axios.post(BASE_URL+"verify", {}, {
+            headers:{
+                "x-access-token":token,
+            },
+        }
+        )
+        .then((res:any)=>{
+            setRealUser(true);
+        }).catch(err=>{
+            localStorage.removeItem("tokentravellerGuide")
+        })
+    }, [])
+    useEffect(()=>{
         axios.post(BASE_URL+"getBlogDetails", {blogId}
         ).then(res=>{
             // console.log(res.data);
+            setLoading(false);
             setBlog(res.data);
         })
         .catch(err=>{
@@ -174,58 +186,72 @@ const DetailsDialog: React.FunctionComponent<DetailsDialogProps> = () => {
         })
     }
     return (
-        <div className="w-ful min-h-screen bg-gray-200 ">
-            <Header setCoordinates={null}/>
-            <div className="flex justify-center w-full" style={{height:"90vh"}}>
-                <div className="w-3/4 bg-white flex p-5 shadow-md my-2">
-                    <div className="w-1/2 flex flex-col space-y-4">
-                        <ToolTip username={blog.user.username} profile={true}>
-                            <div className={`flex space-x-4`}>
-                                <img className="inline object-cover w-12 h-12 mr-2 rounded-full" src={(!blog.user.image)?"/images/profile.png":blog.user.image}/>
-                                <div>
-                                    <h2 className="text-xl font-semibold">{blog.user.username}</h2>
-                                    <p className="text-sm text-gray-500"><Moment format="YYYY/MM/DD">{blog.date}</Moment></p>
-                                </div>
-                            </div>
-                        </ToolTip>
-                        <div className="max-w-full overflow-y-scroll scroll" style={{height:"70vh"}}>
-                            <iframe scrolling="no" ref={ref} onLoad={()=>iframeLoaded()} width={"100%"} srcDoc={blog.content}
-                            />
+        <div className="w-full">
+            {loading && 
+                <div className="w-full min-h-screen bg-gray-200 ">
+                    <Header setCoordinates={null}/>
+                    <div className="flex w-full justify-center items-center" style={{height:"75vh"}}>
+                        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-purple-500" role="status">
+                            <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <div className="w-1/2 p-3">
-                        <div>
-                            <h2 className="text-xl font-semibold ml-3 mb-5">#{blog.title}</h2>
-                        </div>
-                        <div className="w-full justify-between flex items-center m-5">
-                            <div className="flex space-x-5">
-                                <img style={{width:"30px", height:"30px", cursor:"pointer"}} src={liked?"/images/liked.png":"/images/like.png"} alt="like" onClick={()=>handleLike()}></img>
-                                <img style={{width:"30px", height:"30px", cursor:"pointer"}} src="/images/comment.png" alt="comment" onClick={()=>setNewComment(true)}></img>
-                                {/* <img style={{width:"30px", height:"30px", cursor:"pointer"}} src="/images/share.png" alt="share"></img> */}
+                </div>
+            }
+            {!loading &&
+            <div className="w-ful min-h-screen bg-gray-200 ">
+                <Header setCoordinates={null}/>
+                <div className="flex justify-center w-full" style={{height:"90vh"}}>
+                    <div className="w-3/4 bg-white flex p-5 shadow-md my-2">
+                        <div className="w-1/2 flex flex-col space-y-4">
+                            <ToolTip username={blog.user.username} profile={true}>
+                                <div className={`flex space-x-4`}>
+                                    <img className="inline object-cover w-12 h-12 mr-2 rounded-full" src={(!blog.user.image)?"/images/profile.png":blog.user.image}/>
+                                    <div>
+                                        <h2 className="text-xl font-semibold">{blog.user.username}</h2>
+                                        <p className="text-sm text-gray-500"><Moment format="YYYY/MM/DD">{blog.date}</Moment></p>
+                                    </div>
+                                </div>
+                            </ToolTip>
+                            <div className="max-w-full overflow-y-scroll scroll" style={{height:"70vh"}}>
+                                <iframe scrolling="no" ref={ref} onLoad={()=>iframeLoaded()} width={"100%"} srcDoc={blog.content}
+                                />
                             </div>
-                            <div className="flex space-x-5 items-center">
-                                <p className="text-lg cursor-pointer">Recent</p>
-                                <button className="flex items-center space-x-2 bg-gray-700 text-white px-3 py-2 rounded-md" onClick={()=>setNewComment(true)}>
-                                    <p>New</p>
-                                    <img src="/images/plusWhite.png"/>
-                                </button>
-                            </div>
                         </div>
-                        <p className="w-full bg-gray-100" style={{height:"1px"}}></p>
-                        <div className="flex flex-col space-y-3 overflow-y-scroll scroll" style={{height:"65vh"}}>
-                            {newComment && <CreateComment setNewComment={setNewComment} handleCreateComment={handleCreateComment}/>}
-                            {editComment && 
-                            <EditComment setEdit={handleCancelEdit} comment={onEditComment} setEdited={handleUpdate}/>
-                            }
-                            {comments && comments.length>0 &&
-                                comments.map((comment:any, index:number)=>(
-                                    <CommentCard canEdit={id===comment.user_id} id={comment.comment_id} username={comment.user.username} user_img={comment.user.image} date={comment.date} key={index} content={comment.content} handleDelete={handleDelete} handleEdit={handleEdit}/>
-                                ))
-                            }
+                        <div className="w-1/2 p-3">
+                            <div>
+                                <h2 className="text-xl font-semibold ml-3 mb-5">#{blog.title}</h2>
+                            </div>
+                            <div className="w-full justify-between flex items-center m-5">
+                                <div className="flex space-x-5">
+                                    <img style={{width:"30px", height:"30px", cursor:`${realUser?"pointer":"not-allowed"}`}} src={liked?"/images/liked.png":"/images/like.png"} alt="like" onClick={()=>handleLike()}></img>
+                                    <img style={{width:"30px", height:"30px", cursor:`${realUser?"pointer":"not-allowed"}`}} src="/images/comment.png" alt="comment" onClick={()=>{if(realUser)setNewComment(true)}}></img>
+                                    {/* <img style={{width:"30px", height:"30px", cursor:"pointer"}} src="/images/share.png" alt="share"></img> */}
+                                </div>
+                                <div className="flex space-x-5 items-center">
+                                    <p className="text-lg cursor-pointer">Recent</p>
+                                    <button className={`flex items-center space-x-2 bg-gray-700 text-white px-3 py-2 rounded-md ${realUser?"cursor-pointer":"cursor-not-allowed"}`} onClick={()=>{if(realUser)setNewComment(true)}}>
+                                        <p>New</p>
+                                        <img src="/images/plusWhite.png"/>
+                                    </button>
+                                </div>
+                            </div>
+                            <p className="w-full bg-gray-100" style={{height:"1px"}}></p>
+                            <div className="flex flex-col space-y-3 overflow-y-scroll scroll" style={{height:"65vh"}}>
+                                {newComment && <CreateComment setNewComment={setNewComment} handleCreateComment={handleCreateComment}/>}
+                                {editComment && 
+                                <EditComment setEdit={handleCancelEdit} comment={onEditComment} setEdited={handleUpdate}/>
+                                }
+                                {comments && comments.length>0 &&
+                                    comments.map((comment:any, index:number)=>(
+                                        <CommentCard canEdit={id===comment.user_id} id={comment.comment_id} username={comment.user.username} user_img={comment.user.image} date={comment.date} key={index} content={comment.content} handleDelete={handleDelete} handleEdit={handleEdit}/>
+                                    ))
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            }
         </div>
     );
 }

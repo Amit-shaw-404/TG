@@ -53,10 +53,11 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
             },
         }
         )
-        .then(res=>{
+        .then((res:any)=>{
+            if(res.data.username===username)
             setRealUser(true);
         }).catch(err=>{
-
+            localStorage.removeItem("tokentravellerGuide")
         })
     }, [])
     useEffect(()=>{
@@ -165,9 +166,9 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
             // let token=
             axios.post(BASE_URL+"imgUpdate", {username:username, img:res.data.secure_url, oldImg:user.image})
             .then(response=>{
-                let temp=user;
-                user.image=res.data.secure_url;
-                setUser(temp);
+                // let temp=user;
+                // user.image=res.data.secure_url;
+                setUser({...user, ["image"]:res.data.secure_url});
             })
         })
     }
@@ -188,13 +189,13 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
         })
         .then(res=>{
             // console.log(res);
-            let temp=user;
-            temp.name=data.name;
-            temp.username=data.username;
-            setUser(temp);
-            localStorage.removeItem('tokentravellerGuide')
-            dispatch({type:SAVE_USER_DETAILS, payload:{username:null}})
-            window.location.replace("https://tguide.netlify.app/");
+            console.log(url);
+            if(data.username===username){
+                setUser({...user, ["name"]:data.name});
+            }else{
+                localStorage.removeItem("tokentravellerGuide")
+                window.location.replace("https://tguide.netlify.app/");
+            }
         })
         .catch(err=>{
             console.log(err);
@@ -241,13 +242,13 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
                                     <button className="text-gray-700 font-semibold rounded inline-flex items-center w-full">
                                         <img className="inline object-cover border-2 w-28 h-28  rounded-full" src={(!user.image)?"/images/profile.png":user.image} alt="Profile image" style={{alignSelf:"flex-start"}}/>
                                     </button>
-                                    <ImageOptions setSelected={setSelecetd} admin={true} image={user.image}/>
+                                    {realUser && <ImageOptions setSelected={setSelecetd} admin={true} image={user.image}/>}
                                 </div>
                             </div>
                             <div className="my-5">
                                 <div className="flex justify-between w-full items-center">
                                     <p className="text-xl">{user.name}</p>
-                                    <img src="/images/edit.png" alt="edit" className="cursor-pointer" style={{height:"15px", width:"15px"}} onClick={()=>setEditInfo(true)}/>
+                                    {realUser && <img src="/images/edit.png" alt="edit" className="cursor-pointer" style={{height:"15px", width:"15px"}} onClick={()=>setEditInfo(true)}/>}
                                 </div>
                                 <p className="text-md text-gray-500">{user.username}</p>
                                 <p className="text-sm text-gray-500">{user.likes} likes</p>
@@ -256,7 +257,7 @@ const Profile: React.FunctionComponent<ProfileProps> = () => {
                         <div className="w-full">
                             <div className="w-full flex justify-between items-center">
                                 <h2 className="text-2xl">About</h2>
-                                <img className="cursor-pointer" src="/images/edit.png" alt="edit" style={{height:"20px", width:"20px"}} onClick={()=>setEditBio(true)}></img>
+                                {realUser && <img className="cursor-pointer" src="/images/edit.png" alt="edit" style={{height:"20px", width:"20px"}} onClick={()=>setEditBio(true)}></img>}
                             </div>
                             <p className="w-full bg-gray-200 my-3" style={{height:"1px"}}></p>
                             {!editBio && 

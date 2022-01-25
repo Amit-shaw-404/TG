@@ -13,7 +13,7 @@ const ProfileOptions: React.FunctionComponent<ProfileOptionsProps> = () => {
     
     let handleLogout=()=>{
         let val=localStorage.getItem('tokentravellerGuide');
-        if(!val)return;
+        if(val===undefined || val===null || val.length===0)return;
         localStorage.removeItem('tokentravellerGuide')
         dispatch({type:SAVE_USER_DETAILS, payload:{username:null}})
         window.location.replace("https://tguide.netlify.app/");
