@@ -28,11 +28,13 @@ const Cards: React.FunctionComponent<CardsProps> = ({data, setLoading}) => {
     }, [])
     let handleBlogClick=()=>{
         //check loggedIn here
+        console.log(username);
         if(username){
             dispatch({type:SAVE_CURRENT_DATA, payload:data});
-            setLoading(true);
+            // setLoading(true);
+            // history.push(`/blogs/${data.location_id}`);
             setTimeout(()=>{
-                setLoading(false);
+                // setLoading(false);
                 history.push(`/blogs/${data.location_id}`);
             }, 1500)
         }
