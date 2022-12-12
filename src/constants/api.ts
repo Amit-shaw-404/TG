@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export let BASE_URL = "https://tgubackend.herokuapp.com/"
+export let BASE_URL = "https://tgbackend-i7w7.onrender.com/"
 // export let BASE_URL = "http://localhost:4000/"
 
 let options:any = {
